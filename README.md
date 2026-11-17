@@ -1,91 +1,94 @@
-# Kambaz LMS
+# Learning Management System
 
-A full-stack learning management system built with React, Next.js, Node.js, Express, and MongoDB. Supports course management, module organization, quiz creation with auto-grading, enrollment workflows, and role-based access for students and faculty.
+![Next.js](https://img.shields.io/badge/Next.js-15-000000)
+![TypeScript](https://img.shields.io/badge/TypeScript-strict-3178c6)
+![Node.js](https://img.shields.io/badge/Node.js-Express-339933)
+![MongoDB](https://img.shields.io/badge/MongoDB-Mongoose-47a248)
+
+A full-stack learning management system: faculty build courses out of modules,
+assignments and quizzes, and students enroll, work through the content and take
+the quizzes. A Next.js and Redux front end talks to a Node.js, Express and
+MongoDB REST API, with session-based sign-in and hashed passwords.
 
 ![Dashboard](lms.svg)
 
-## Features
+## What it does
 
-- **Course management** — create, update, delete courses (faculty/admin); browse and enroll (students)
-- **Modules** — organize course content into collapsible modules with CRUD operations
-- **Assignments** — create and manage assignments within courses
-- **Quizzes** — full quiz engine with question management, timed attempts, auto-save, and submission grading
-- **Enrollment system** — enroll/unenroll with toggle between "my courses" and "all courses" views
-- **Authentication** — session-based auth with role-based access control (student, faculty, admin)
-- **Dashboard** — personalized course grid filtered by enrollment status
+- **Accounts** - sign up, sign in and edit a profile; users have a role
+  (student, faculty or admin), and the interface adapts to it.
+- **Courses** - a dashboard of courses to browse, enroll in or leave; faculty
+  create, edit and delete them.
+- **Modules and assignments** - organize each course into modules, and manage
+  assignments with titles, points and due dates.
+- **Quizzes (front end)** - an editor for multiple-choice, true/false and
+  fill-in-the-blank questions, with publishing, a preview, and timed attempts
+  that show per-question results. The matching quiz API is not in this
+  repository yet - see [known limitations](#known-limitations).
+- **People** - a roster of everyone enrolled in a course.
 
-## Architecture
+## What it demonstrates
 
-```
-kambaz-lms/
-├── client/                          ← Next.js frontend (Vercel)
-│   ├── src/app/
-│   │   ├── (Kambaz)/               ← App route group
-│   │   │   ├── Dashboard/          → Course grid with enroll/unenroll
-│   │   │   ├── Courses/            → Course pages, modules, assignments, quizzes
-│   │   │   ├── Account/            → Auth (signin/signup/profile), session management
-│   │   │   ├── Enrollments/        → Enrollment API client + Redux slice
-│   │   │   ├── Database/           → Seed data (JSON) for courses, users, modules
-│   │   │   ├── store.ts            → Redux store (courses, modules, assignments, quizzes, enrollments, account)
-│   │   │   └── layout.tsx          → Provider wrapper (Redux + Session)
-│   │   └── Labs/                   → Lab exercises (Lab 1–5)
-│   └── public/images/              → Course card images
-│
-└── server/                          ← Express backend (Render)
-    ├── index.js                     → Entry point — Express, CORS, session, Mongoose connection
-    └── Kambaz/
-        ├── Users/                   → User routes, DAO, Mongoose schema
-        ├── Courses/                 → Course routes, DAO, schema
-        ├── Modules/                 → Module routes, DAO, schema
-        ├── Assignments/             → Assignment routes, DAO, schema
-        └── Enrollments/             → Enrollment routes, DAO, schema
-```
+| Area | Where it shows up |
+|---|---|
+| **Full-stack web development** | a Next.js (App Router) client and an Express server, deployed separately (Vercel and Render) and talking over a REST API with credentialed CORS - [`client/`](client/), [`server/`](server/) |
+| **API and data modeling** | 26 REST endpoints across users, courses, modules, assignments and enrollments; Mongoose schemas with a data-access layer between routes and the database - [`server/Kambaz/`](server/Kambaz/) |
+| **Authentication and security** | session cookies (SameSite=None and Secure in production); passwords hashed with bcrypt and never returned by the API; older plain-text accounts upgraded to a hash on their next sign-in - [`Users/dao.js`](server/Kambaz/Users/dao.js) |
+| **State management** | Redux Toolkit slices for courses, modules, assignments, quizzes, enrollments and the signed-in user |
+| **TypeScript** | the client type-checks with no errors |
 
-**Data flow:** React components dispatch Redux actions → Axios API clients (with credentials) → Express REST routes → Mongoose DAOs → MongoDB Atlas
+## Run it locally
 
-## Tech Stack
+You need Node.js and a MongoDB database (a local one works).
 
-**Frontend:** React 18, Next.js (App Router), TypeScript, Redux Toolkit, Axios, Bootstrap, React Icons
-**Backend:** Node.js, Express, Mongoose, express-session
-**Database:** MongoDB Atlas
-**Deployment:** Vercel (frontend), Render (backend)
-**Auth:** Session-based with secure cookies (SameSite, HTTPS in production)
-
-## Run It Locally
-
-**Backend:**
 ```bash
+# API - http://localhost:4000
 cd server
-cp .env.example .env        # fill in your MongoDB connection string
+cp .env.example .env    # set DATABASE_CONNECTION_STRING, e.g. mongodb://127.0.0.1:27017/lms,
+                        # and SERVER_ENV=development
 npm install
-npm run dev                  # runs on localhost:4000
+npm run dev
 ```
 
-**Frontend:**
 ```bash
+# web app - http://localhost:3000
 cd client
 npm install
 echo "NEXT_PUBLIC_HTTP_SERVER=http://localhost:4000" > .env.local
-npm run dev                  # runs on localhost:3000
+npm run dev
 ```
 
-## API Endpoints
+## API
 
-| Resource | Methods | Auth |
-| :--- | :--- | :--- |
-| `/api/users` | GET, POST, PUT, DELETE, signin/signout | Session |
-| `/api/courses` | GET, POST, PUT, DELETE | Session (faculty for writes) |
-| `/api/courses/:cid/modules` | GET, POST, PUT, DELETE | Session |
-| `/api/courses/:cid/quizzes` | GET, POST, PUT, DELETE, publish | Session |
-| `/api/courses/:cid/quizzes/:qid/questions` | POST, PUT, DELETE | Session |
-| `/api/courses/:cid/quizzes/:qid/attempts` | GET, POST, PUT, submit | Session |
-| `/api/users/:uid/enrollments` | GET | Session |
-| `/api/users/current/courses/:cid` | POST (enroll), DELETE (unenroll) | Session |
+| Resource | Endpoints |
+|---|---|
+| **Users and sign-in** | `POST /api/users/signup`, `/signin`, `/signout`, `/profile` · `GET /api/users` (optionally `?role=`) · `GET` / `PUT` / `DELETE /api/users/:userId` |
+| **Courses** | `GET` / `POST /api/courses` · `GET` / `PUT` / `DELETE /api/courses/:courseId` · `GET /api/courses/:courseId/users` |
+| **Modules** | `GET` / `POST /api/courses/:courseId/modules` · `PUT` / `DELETE /api/courses/:courseId/modules/:moduleId` |
+| **Assignments** | `GET` / `POST /api/courses/:courseId/assignments` · `GET` / `PUT` / `DELETE /api/assignments/:assignmentId` |
+| **Enrollments** | `GET /api/users/:userId/courses` · `POST` / `DELETE /api/users/current/courses/:courseId` |
 
-## Highlights
+Creating a course enrolls its creator automatically.
 
-- **Full-stack ownership** — designed and built both the API layer and the React frontend from scratch
-- **State management** — Redux Toolkit slices keep client state in sync with the database across courses, modules, quizzes, enrollments, and auth
-- **Role-based access** — faculty can create/edit/delete courses and quizzes; students can browse, enroll, and take quizzes
-- **Quiz engine** — supports multiple question types, attempt tracking, auto-save during attempts, and submission with grading
-- **Session auth** — secure cookie-based sessions with CORS credentials, configured for both local dev and cross-origin production deployment
+## Project layout
+
+```
+client/                    Next.js front end
+  src/app/(Kambaz)/        pages: Account, Dashboard, Courses (Home, Modules, Assignments,
+                           Quizzes, People, Grades), Calendar, Inbox
+  src/app/(Kambaz)/Database/   sample seed data
+server/                    Express API
+  index.js                 server setup: CORS, sessions, MongoDB connection, routes
+  Kambaz/                  one folder per resource: schema, model, data access, routes
+Documentation/             user flows, domain structures and the quiz design
+```
+
+## Known limitations
+
+- **The quiz API is missing.** The quiz screens call endpoints for quizzes,
+  questions, publishing and attempts (start, save, submit, latest) under
+  `/api/courses/:courseId/quizzes`, but the server in this repository doesn't
+  implement them yet, so quizzes don't load against it.
+- **Roles are enforced in the interface, not the API.** Faculty see the editing
+  controls, but the endpoints don't yet check the signed-in user's role (or, for
+  most resources, that anyone is signed in).
+- **No automated tests yet.**
