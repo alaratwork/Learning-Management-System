@@ -25,4 +25,14 @@ const userSchema = new mongoose.Schema({
   totalActivity: String,
 }, { collection: "users" });
 
+// Passwords are stored as bcrypt hashes (see dao.js) and never leave the
+// server: whenever a user is turned into JSON - an API response, or the copy
+// kept in the login session - the password field is dropped.
+userSchema.set("toJSON", {
+  transform: (_doc, ret) => {
+    delete ret.password;
+    return ret;
+  },
+});
+
 export default userSchema;
