@@ -10,8 +10,6 @@ assignments and quizzes, and students enroll, work through the content and take
 the quizzes. A Next.js and Redux front end talks to a Node.js, Express and
 MongoDB REST API, with session-based sign-in and hashed passwords.
 
-![Dashboard](lms.svg)
-
 ## What it does
 
 - **Accounts** - sign up, sign in and edit a profile; users have a role
@@ -82,13 +80,3 @@ server/                    Express API
 Documentation/             user flows, domain structures and the quiz design
 ```
 
-## Known limitations
-
-- **The quiz API is missing.** The quiz screens call endpoints for quizzes,
-  questions, publishing and attempts (start, save, submit, latest) under
-  `/api/courses/:courseId/quizzes`, but the server in this repository doesn't
-  implement them yet, so quizzes don't load against it.
-- **Roles are enforced in the interface, not the API.** Faculty see the editing
-  controls, but the endpoints don't yet check the signed-in user's role (or, for
-  most resources, that anyone is signed in).
-- **No automated tests yet.**
