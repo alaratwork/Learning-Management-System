@@ -1,6 +1,6 @@
 // src/app/(Kambaz)/kambaz-homepage-layout.tsx file
 /* Should be responsisble for the layout of the main Kambaz navigation sidebar:
-- contains NEU page, Account, Dashboard, Courses, Calendar, Inbox, Labs
+- contains Account, Dashboard, Courses, Calendar and Inbox
 */
 "use client";
 import { ReactNode } from "react";

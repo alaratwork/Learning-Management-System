@@ -22,8 +22,6 @@
  * └─────────────────────────────────────────────────────────────────────────┘
  * 
  * @author Alara
- * @course CS5610 Web Development - Northeastern University
- * @assignment A6 - MongoDB Integration
  */
 
 // ═══════════════════════════════════════════════════════════════════════════
@@ -41,7 +39,6 @@ import CourseRoutes from "./Kambaz/Courses/routes.js";
 import ModuleRoutes from "./Kambaz/Modules/routes.js";
 import AssignmentRoutes from "./Kambaz/Assignments/routes.js";
 import EnrollmentRoutes from "./Kambaz/Enrollments/routes.js";
-import Lab5Routes from "./Lab5/index.js";
 
 // ═══════════════════════════════════════════════════════════════════════════
 // DATABASE CONNECTION - Connecting to MongoDB Atlas
@@ -94,7 +91,7 @@ app.get("/", (req, res) => {
   res.json({
     message: "Welcome to Kambaz Server!",
     author: "Alara",
-    version: "A6 - MongoDB Integration",
+    version: "1.0.0",
     status: "running"
   });
 });
@@ -104,7 +101,6 @@ CourseRoutes(app);
 ModuleRoutes(app);
 AssignmentRoutes(app);
 EnrollmentRoutes(app);
-Lab5Routes(app);
 
 // ═══════════════════════════════════════════════════════════════════════════
 // SERVER STARTUP
@@ -114,5 +110,5 @@ const PORT = process.env.PORT || 4000;
 
 app.listen(PORT, () => {
   console.log(`🚀 Kambaz Server running on port ${PORT}`);
-  console.log(`   Created by Alara | CS5610`);
+  console.log(`   Created by Alara`);
 });

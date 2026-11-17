@@ -1,12 +1,12 @@
 // Kambaz Navigation Sidebar Component
 // Provides main navigation links for the Kambaz app
-// Includes links to sections: Account, Dashboard, Courses, Calendar, Inbox, and Labs
+// Includes links to sections: Account, Dashboard, Courses, Calendar and Inbox
 
 "use client";
 import Link from "next/link";
 import { AiOutlineDashboard } from "react-icons/ai";
 import { IoCalendarOutline } from "react-icons/io5";
-import { LiaCogSolid, LiaBookSolid } from "react-icons/lia";
+import { LiaBookSolid } from "react-icons/lia";
 import { FaInbox, FaRegCircleUser } from "react-icons/fa6";
 import { ListGroup, ListGroupItem } from "react-bootstrap";
 import {usePathname } from 'next/navigation';
@@ -19,7 +19,6 @@ export default function KambazNavigation() {
     { label: "Courses", path: "/Courses", icon: LiaBookSolid},
     { label: "Calendar", path: "/Calendar", icon: IoCalendarOutline },
     { label: "Inbox", path: "/Inbox", icon: FaInbox },
-    { label: "Labs", path: "/Labs", icon: LiaCogSolid },
   ];
 
   return (
@@ -28,16 +27,6 @@ export default function KambazNavigation() {
     style={{ width: 120 }}
       className="rounded-0 position-fixed bottom-0 top-0 d-none d-md-block bg-black z-2"
       >
-      {/* Northeastern University Link */}
-      <ListGroupItem 
-      id="wd-neu-link" 
-      target="_blank" 
-      href="https://www.northeastern.edu/"
-        action 
-        className="bg-black border-0 text-center"> 
-        <img src="/images/NEU.png" width={75} alt="Northeastern University logo" />
-        </ListGroupItem>
-
       {/* Account */}
            <ListGroupItem
         as={Link}
